@@ -29,7 +29,7 @@ namespace Contoso.Controllers
         [ProducesResponseType(200, Type = typeof(StudentDTO))]
         [HttpGet("[action]")]
         [Cached(20)]
-        public async Task<IActionResult> StudentList()        
+        public async Task<IActionResult> StudentList()
         {
             var students = await _repoWrapper.Student.GetAll();
             var StudentListDTO = _mapper.Map<List<Student>, List<StudentDTO>>(students);
@@ -41,6 +41,7 @@ namespace Contoso.Controllers
         [Cached(20)]
         public async Task<IActionResult> StudentDetails(Guid studentId)
         {
+            _repoWrapper.BeginTransaction();
             var student = await _repoWrapper.Student.GetAsync(studentId);
             if (!(student is null))
             {

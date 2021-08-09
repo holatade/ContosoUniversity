@@ -1,25 +1,39 @@
 ﻿using Domain.Models;
-using FluentNHibernate.Mapping;
+using NHibernate;
+using NHibernate.Mapping.ByCode;
+using NHibernate.Mapping.ByCode.Conformist;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Persistence.Mappings
 {
-    public class InstructorMap : ClassMap<Instructor>
+    public class InstructorMap : ClassMapping<Instructor>
     {
         public InstructorMap()
         {
-            Id(x => x.Id).GeneratedBy.GuidComb();
-            Map(x => x.FirstName).Not.Nullable();
-            Map(x => x.LastName).Not.Nullable();
-            Map(x => x.HireDate).Not.Nullable();
-            HasOne(x => x.OfficeAssignment).PropertyRef(x => x.Instructor);
-            HasManyToMany(x => x.Courses)
-                //.Cascade.All()
-                .Table("CourseAssignment");
-            References(x => x.Department)
-            .Column("DepartmentId");
+            Id(e => e.Id, mapper => mapper.Generator(Generators.Guid));
+            Property(e => e.FirstName, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.String); });
+            Property(e => e.LastName, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.String); });
+            Property(e => e.HireDate, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.DateTime); });
+            OneToOne(e => e.OfficeAssignment,
+              mapper =>
+              {
+                  mapper.Cascade(Cascade.Persist);
+                  mapper.PropertyReference(a => a.Instructor);
+              });
+            ManyToOne(b => b.Department, mapping => { mapping.Class(typeof(Department));mapping.Column("DepartmentId"); });
+            Bag(e => e.Courses,
+              mapper =>
+              {
+                  mapper.Key(k => k.Column("InstructorId"));
+                  mapper.Table("CourseAssignment");
+              },
+              relation => relation.ManyToMany(mtm =>
+              {
+                  mtm.Class(typeof(Course));
+                  mtm.Column("CourseId");
+              }));
         }
     }
 }

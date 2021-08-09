@@ -1,19 +1,27 @@
 ﻿using Domain.Models;
-using FluentNHibernate.Mapping;
+using NHibernate;
+using NHibernate.Mapping.ByCode;
+using NHibernate.Mapping.ByCode.Conformist;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Persistence.Mappings
 {
-    public class OfficeAssignmentMap : ClassMap<OfficeAssignment>
+    public class OfficeAssignmentMap : ClassMapping<OfficeAssignment>
     {
         public OfficeAssignmentMap()
         {
 
-            Id(x => x.Id).GeneratedBy.GuidComb();
-            Map(x => x.Location).Not.Nullable();
-            References(x => x.Instructor, "InstructorId").Unique();
+            Id(e => e.Id, mapper => mapper.Generator(Generators.Guid));
+            Property(e => e.Location, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.String); });
+            ManyToOne(a => a.Instructor,
+              mapper =>
+              {
+                  mapper.Class(typeof(Instructor));
+                  mapper.Column("InstructorId");
+                  mapper.Unique(true);
+              });
         }
     }
 }

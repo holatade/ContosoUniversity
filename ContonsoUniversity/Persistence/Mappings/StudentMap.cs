@@ -1,23 +1,29 @@
 ﻿using Domain.Models;
-using FluentNHibernate.Mapping;
+using NHibernate;
+using NHibernate.Mapping.ByCode;
+using NHibernate.Mapping.ByCode.Conformist;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Persistence.Mappings
 {
-    class StudentMap : ClassMap<Student>
+    class StudentMap : ClassMapping<Student>
     {
         public StudentMap()
         {
-            Id(x => x.Id).GeneratedBy.GuidComb();
-            Map(x => x.FirstName).Not.Nullable();
-            Map(x => x.LastName).Not.Nullable();
-            Map(x => x.EnrollmentDate).Nullable();
-            HasMany(x => x.Enrollments)
-                .Cascade.AllDeleteOrphan()
-                .Fetch.Join()
-                .Inverse().KeyColumn("StudentId");
+            Id(e => e.Id, mapper => mapper.Generator(Generators.Guid));
+            Property(e => e.FirstName, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.String); });
+            Property(e => e.LastName, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.String); });
+            Property(e => e.EnrollmentDate, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.DateTime); });
+            Bag(e => e.Enrollments,
+             mapper =>
+             {
+                 mapper.Key(k => k.Column("StudentId"));
+                 mapper.Cascade(Cascade.All);
+             },
+             relation => relation.OneToMany(
+             mapping => mapping.Class(typeof(Enrollment))));
         }
     }
 }

@@ -1,30 +1,44 @@
 ﻿using Domain.Models;
-using FluentNHibernate.Mapping;
+using NHibernate;
+using NHibernate.Mapping.ByCode;
+using NHibernate.Mapping.ByCode.Conformist;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Persistence.Mappings
 {
-    class CourseMap : ClassMap<Course>
+    class CourseMap : ClassMapping<Course>
     {
         public CourseMap()
         {
-            Id(x => x.Id).GeneratedBy.GuidComb();
-            Map(x => x.CourseCode).Not.Nullable();
-            Map(x => x.Title).Not.Nullable();
-            Map(x => x.Credits).Nullable();
-            HasMany(x => x.Enrollments)
-            //.Cascade.AllDeleteOrphan()
-            .Cascade.All()
-            .Inverse()
-            .Fetch.Join().KeyColumn("CourseId");
-            References(x => x.Department)
-            .Column("DepartmentId");
-            HasManyToMany(x => x.Instructors)
-               .Cascade.All()
-              .Inverse()
-              .Table("CourseAssignment");
+            Id(e => e.Id, mapper => mapper.Generator(Generators.Guid));
+            Property(e => e.CourseCode, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.Int32); });
+            Property(e => e.Title, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.String); });
+            Property(e => e.Credits, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.Int32); });
+            Bag(e => e.Enrollments,
+             mapper =>
+             {
+                 mapper.Key(k => k.Column("CourseId"));
+                 mapper.Cascade(Cascade.All);
+                 mapper.Inverse(true);
+             },
+             relation => relation.OneToMany(
+             mapping => mapping.Class(typeof(Enrollment))));
+            ManyToOne(b => b.Department, mapping => { mapping.Class(typeof(Department)); mapping.Column("DepartmentId"); });
+            Bag(e => e.Instructors,
+              mapper =>
+              {
+                  mapper.Key(k => k.Column("CourseId"));
+                  mapper.Table("CourseAssignment");
+                  mapper.Cascade(Cascade.All);
+                  mapper.Inverse(true);
+              },
+              relation => relation.ManyToMany(mtm =>
+              {
+                  mtm.Class(typeof(Instructor));
+                  mtm.Column("InstructorId");
+              }));
         }
     }
 }
