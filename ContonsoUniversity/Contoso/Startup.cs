@@ -18,6 +18,7 @@ using System.Reflection;
 using System.IO;
 using Contoso.Helpers;
 using Contoso.Installer;
+using Newtonsoft.Json;
 
 namespace Contoso
 {
@@ -33,17 +34,22 @@ namespace Contoso
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddControllersWithViews().AddNewtonsoftJson(options =>
-            //{
-            //    options.SerializerSettings.ContractResolver = new NHibernateContractResolver();
-            //});
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ContractResolver = new NHibernateContractResolver();
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.Formatting = Formatting.Indented;
+            });
+
+            services.AddControllers();
+
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
 
-            services.AddControllers();
+            //services.AddControllers();
             services.AddAutoMapper(typeof(Startup));
 
 

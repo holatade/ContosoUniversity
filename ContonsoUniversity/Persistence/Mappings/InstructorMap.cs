@@ -26,6 +26,7 @@ namespace Persistence.Mappings
             Bag(e => e.Courses,
               mapper =>
               {
+                  mapper.Fetch(CollectionFetchMode.Join);
                   mapper.Key(k => k.Column("InstructorId"));
                   mapper.Table("CourseAssignment");
               },

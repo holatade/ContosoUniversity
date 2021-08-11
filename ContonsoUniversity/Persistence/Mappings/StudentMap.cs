@@ -13,12 +13,13 @@ namespace Persistence.Mappings
         public StudentMap()
         {
             Id(e => e.Id, mapper => mapper.Generator(Generators.Guid));
-            Property(e => e.FirstName, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.String); });
+            Property(e => e.FirstName, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.String);});
             Property(e => e.LastName, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.String); });
             Property(e => e.EnrollmentDate, mapper => { mapper.NotNullable(true); mapper.Type(NHibernateUtil.DateTime); });
             Bag(e => e.Enrollments,
              mapper =>
              {
+                 //mapper.Lazy(CollectionLazy.Lazy);
                  mapper.Key(k => k.Column("StudentId"));
                  mapper.Cascade(Cascade.All);
              },

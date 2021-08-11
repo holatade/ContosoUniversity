@@ -26,12 +26,6 @@ namespace Persistence
 
         private static ISessionFactory CreateSessionFactory(string connectionString)
         {
-            //return Fluently.Configure()
-            //  .Database(MsSqlConfiguration.MsSql2012.ConnectionString(connectionString))
-            //  .Mappings(m => m.FluentMappings.AddFromAssembly(typeof(NHibernateExtensions).Assembly))
-            //  .ExposeConfiguration(BuildSchema)
-            //  .BuildSessionFactory();
-
             ModelMapper modelMapper = new ModelMapper();
             modelMapper.AddMappings(typeof(CourseMap).Assembly.GetTypes());
 
@@ -50,12 +44,6 @@ namespace Persistence
 
             var sessionFactory = config.BuildSessionFactory();
             return sessionFactory;
-        }
-
-        private static void BuildSchema(Configuration config)
-        {
-            new SchemaExport(config).Drop(false, true);
-            new SchemaUpdate(config).Execute(false, true);
         }
     }
 }

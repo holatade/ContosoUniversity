@@ -3,6 +3,7 @@ using Contoso.DTOs;
 using Contoso.Helpers;
 using Contoso.ViewModels;
 using DataAccess;
+using Domain;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using NHibernate;
@@ -28,27 +29,38 @@ namespace Contoso.Controllers
 
         [ProducesResponseType(200, Type = typeof(StudentDTO))]
         [HttpGet("[action]")]
-        [Cached(20)]
         public async Task<IActionResult> StudentList()
         {
             var students = await _repoWrapper.Student.GetAll();
-            var StudentListDTO = _mapper.Map<List<Student>, List<StudentDTO>>(students);
-            return Ok(StudentListDTO);
+            return Ok(students);
+        }
+
+        /// <summary>
+        /// Get the list of student offering a particular course using course Id
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetStudentsByCourseId(Guid courseId)
+        {
+            var students = await _repoWrapper.Student.GetStudentsByCourseId(courseId);
+            return Ok(students);
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> PaginatedStudentList([FromQuery] PaginationQuery paginationQuery)
+        {
+            var paginatedResponse = await _repoWrapper.Student.GetPaginatedStudentData(paginationQuery);
+            return Ok(paginatedResponse);
         }
 
         [ProducesResponseType(200, Type = typeof(StudentDTO))]
         [HttpGet("[action]")]
-        [Cached(20)]
         public async Task<IActionResult> StudentDetails(Guid studentId)
         {
-            _repoWrapper.BeginTransaction();
             var student = await _repoWrapper.Student.GetAsync(studentId);
             if (!(student is null))
             {
-                _repoWrapper.BeginTransaction();
-                var studentDTO = _mapper.Map<StudentDTO>(student);
-                await _repoWrapper.Commit();
-                return Ok(studentDTO);
+                return Ok(student);
             }
             return NotFound("Student profile does not exist");
         }

@@ -10,7 +10,7 @@ namespace Contoso.DTOs
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public  DateTime EnrollmentDate { get; set; }
-        public List<StudentEnrollment> StudentEnrollments { get; set; }
+        public ICollection<StudentEnrollment> StudentEnrollments { get; set; }
     }
 
     public class StudentEnrollment

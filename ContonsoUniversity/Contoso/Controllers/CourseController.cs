@@ -27,12 +27,17 @@ namespace Contoso.Controllers
 
         [ProducesResponseType(200, Type = typeof(CourseDTO))]
         [HttpGet("[action]")]
-        [Cached(20)]
         public async Task<IActionResult> GetCourses()
         {
             var courses = await _repoWrapper.Course.GetAll();
-            var courseDTO = _mapper.Map<List<Course>,List<CourseDTO>>(courses);
-            return Ok(courseDTO);
+            return Ok(courses);
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult CourseAverageCredit()
+        {
+            var averageCredit = _repoWrapper.Course.CourseAverageCredit();
+            return Ok(averageCredit);
         }
 
         [ProducesResponseType(200, Type = typeof(string))]
