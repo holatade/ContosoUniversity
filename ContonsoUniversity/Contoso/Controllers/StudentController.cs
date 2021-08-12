@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Contoso.DTOs;
 using Contoso.Helpers;
 using Contoso.ViewModels;
 using DataAccess;
@@ -27,7 +26,7 @@ namespace Contoso.Controllers
             _mapper = mapper;
         }
 
-        [ProducesResponseType(200, Type = typeof(StudentDTO))]
+        [ProducesResponseType(200, Type = typeof(Student))]
         [HttpGet("[action]")]
         public async Task<IActionResult> StudentList()
         {
@@ -53,7 +52,7 @@ namespace Contoso.Controllers
             return Ok(paginatedResponse);
         }
 
-        [ProducesResponseType(200, Type = typeof(StudentDTO))]
+        [ProducesResponseType(200, Type = typeof(Student))]
         [HttpGet("[action]")]
         public async Task<IActionResult> StudentDetails(Guid studentId)
         {

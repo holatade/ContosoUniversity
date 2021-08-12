@@ -17,7 +17,6 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.IO;
 using Contoso.Helpers;
-using Contoso.Installer;
 using Newtonsoft.Json;
 
 namespace Contoso
@@ -56,8 +55,6 @@ namespace Contoso
             var connStr = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddNHibernate(connStr);
-
-            services.AddCacheServices(Configuration);
 
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 

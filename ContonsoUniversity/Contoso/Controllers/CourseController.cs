@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Contoso.DTOs;
 using Contoso.Helpers;
 using Contoso.ViewModels;
 using DataAccess;
@@ -25,7 +24,7 @@ namespace Contoso.Controllers
             _mapper = mapper;
         }
 
-        [ProducesResponseType(200, Type = typeof(CourseDTO))]
+        [ProducesResponseType(200, Type = typeof(Course))]
         [HttpGet("[action]")]
         public async Task<IActionResult> GetCourses()
         {

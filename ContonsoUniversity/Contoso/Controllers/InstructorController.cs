@@ -40,7 +40,6 @@ namespace Contoso.Controllers
 
         [ProducesResponseType(200, Type = typeof(Instructor))]
         [HttpGet("[action]")]
-        [Cached(20)]
         public async Task<IActionResult> InstructorList()
         {
             var instructors = await _repoWrapper.Instructor.GetAll();
